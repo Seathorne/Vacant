@@ -398,6 +398,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 31f8cee0747e2d74b839e3aa4367cec6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  mazeSize: 101
+  wallPrefab: {fileID: 8553159845057599082, guid: 53c3897f2790e8c449b141e527d3bd53,
+    type: 3}
 --- !u!1 &2097106511
 GameObject:
   m_ObjectHideFlags: 0
