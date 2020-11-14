@@ -1,38 +1,164 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
+
+using UnityEditor;
+
 using UnityEngine;
 
-public class Generator : MonoBehaviour
+public class Generator : EditorWindow
 {
-    public int mazeSize = 101;
-    public GameObject wallPrefab;
+    /// <summary>
+    /// The minimum allowable width and height (in number of walls) for the maze.
+    /// </summary>
+    public const int MinMazeSize = 15;
+
+    /// <summary>
+    /// The maximum allowable width and height (in number of walls) for the maze.
+    /// </summary>
+    public const int MaxMazeSize = 101;
+
+    /// <summary>
+    /// The tag given to all walls generated as part of the maze.
+    /// </summary>
+    public const string WallTag = "Wall";
+
+    private int mazeSize = 21;
+
+    private GameObject floor;
+    private GameObject wallPrefab;
     
     private Vector3 floorScale;
     private int[,] mazeData;
-    
-    // Start is called before the first frame update
-    void Start()
+
+    /// <summary>
+    /// A collection of walls that have already been generated.
+    /// </summary>
+    private readonly List<GameObject> walls = new List<GameObject>();
+
+    /// <summary>
+    /// Gets whether a maze has been generated:
+    /// <see langword="true"/> if a maze is currently generated; <see langword="false"/> otherwise.
+    /// </summary>
+    public bool IsGenerated { get; private set; } = false;
+
+    /// <summary>
+    /// Shows the custom window in the editor.
+    /// </summary>
+    [MenuItem("Custom/Maze Generation")]
+    public static void ShowWindow()
     {
-        if(mazeSize % 2 == 0)
-        {
-            Debug.Log("Only odd-numbered maze sizes are optimal; maze size rounded up to nearest odd number.");
-            
-            mazeSize += 1;
-        }
-        
-        floorScale = transform.parent.Find("Floor").localScale;
-        mazeData = new int[mazeSize, mazeSize];
-        
-        GenerateMaze();
-        InstantiateMaze();
+        GetWindow<Generator>();
     }
 
-    // Update is called once per frame
-    void Update()
+    /// <summary>
+    /// This method is invoked to set up the custom window whenever its GUI is reloaded.
+    /// </summary>
+    private void OnGUI()
     {
-        
+        GUI.enabled = true;
+
+        GUILayout.Label("Generate Maze", EditorStyles.boldLabel);
+
+        // Create user-input inspector values
+        mazeSize = EditorGUILayout.IntField("Maze Size", mazeSize);
+        floor = EditorGUILayout.ObjectField("Floor", floor, typeof(GameObject), allowSceneObjects: true) as GameObject;
+        wallPrefab = EditorGUILayout.ObjectField("Walls", wallPrefab, typeof(GameObject), allowSceneObjects: true) as GameObject;
+
+        // Disable generate button if maze already generated
+        GUI.enabled = !IsGenerated;
+        if (GUILayout.Button("Generate Maze!"))
+        {
+            if (mazeSize % 2 == 0)
+            {
+                ShowNotification(new GUIContent("Maze Size must be an odd number"));
+
+                GUI.enabled = false;
+            }
+            else if (mazeSize < MinMazeSize || mazeSize > MaxMazeSize)
+            {
+                ShowNotification(new GUIContent($"Maze Size must be within interval [{MinMazeSize}, {MaxMazeSize}]"));
+
+                GUI.enabled = false;
+            }
+            else if (floor is null)
+            {
+                ShowNotification(new GUIContent("No floor object selected"));
+
+                GUI.enabled = false;
+            }
+            else if (wallPrefab is null)
+            {
+                ShowNotification(new GUIContent("No wall objects selected"));
+
+                GUI.enabled = false;
+            }
+            else
+            {
+                // If all inspector values valid, generate maze
+                GenerateMaze();
+            }
+        }
+
+        // Disable destroy button if maze not yet generated
+        GUI.enabled = true;
+        if (GUILayout.Button("Destroy Maze!"))
+        {
+            DestroyMaze();
+            IsGenerated = false;
+        }
+
+        GUI.enabled = true;
     }
     
+    /// <summary>
+    /// Calculates and instantiates a new maze in the scene.
+    /// </summary>
+    void GenerateMaze()
+    {
+        if (IsGenerated)
+        {
+            throw new System.InvalidOperationException("Maze should not be generated twice in a row!");
+        }
+
+        floorScale = floor.transform.localScale;
+        mazeData = new int[mazeSize, mazeSize];
+
+        CalculateMaze();
+        InstantiateMaze();
+
+        IsGenerated = true;
+    }
+
+    /// <summary>
+    /// Destroys all walls composing a maze that has already been generated.
+    /// </summary>
+    void DestroyMaze()
+    {
+        // Destroy all generated walls
+        if (walls.Count > 0)
+        {
+            foreach (var wall in walls)
+            {
+                DestroyImmediate(wall);
+            }
+
+            walls.Clear();
+        }
+        else
+        {
+            var children = from wall in GameObject.FindGameObjectsWithTag(WallTag)
+                           where wall.tag == WallTag
+                           select wall;
+
+            foreach (var child in children)
+            {
+                DestroyImmediate(child);
+            }
+        }
+
+        IsGenerated = false;
+    }
+
     int GetMazeElement(int x, int y)
     {
         if(x < 0 || x > mazeSize - 1 || y < 0 || y > mazeSize - 1)
@@ -43,7 +169,7 @@ public class Generator : MonoBehaviour
         return mazeData[x, y];
     }
     
-    void GenerateMaze()
+    void CalculateMaze()
     {
         int startingRoomBounds = (4 * mazeSize) / 10;
         Vector2Int currentCell = new Vector2Int(2 * Random.Range(0, mazeSize / 2) + 1, 2 * Random.Range(0, mazeSize / 2) + 1);
@@ -213,6 +339,10 @@ public class Generator : MonoBehaviour
                         
                     wall = Instantiate(wallPrefab, wallPosition, Quaternion.identity);
                     wall.transform.localScale = new Vector3(wallScale, wallScale, wallScale);
+                    wall.transform.parent = floor.transform;
+                    wall.tag = WallTag;
+
+                    walls.Add(wall);
                 }
             }
         }
