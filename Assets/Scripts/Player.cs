@@ -102,6 +102,14 @@ public class Player : MonoBehaviour
 
         // Update velocity and move
         Velocity = velocity;
-        GetComponent<Rigidbody>()?.MovePosition(transform.position + Velocity * Time.deltaTime);
+
+        // Face direction of velocity
+        var rb = GetComponent<Rigidbody>();
+        if (velocity != Vector3.zero)
+        {
+            rb?.MoveRotation(Quaternion.LookRotation(velocity));
+        }
+
+        rb?.MovePosition(transform.position + Velocity * Time.deltaTime);
     }
 }
