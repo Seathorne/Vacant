@@ -5,14 +5,18 @@
 /// </summary>
 public class Flashlight : MonoBehaviour
 {
-    private Quaternion defaultRotation;
+    /// <summary>
+    /// The angular velocity magnitude (in degrees/second) at which
+    /// the flashlight rotates toward the target location.
+    /// </summary>
+    public float rotationVelocity;
 
     /// <summary>
     /// Start is called before the first frame update.
     /// </summary>
     protected void Start()
     {
-        defaultRotation = transform.rotation;
+
     }
 
     /// <summary>
@@ -40,7 +44,10 @@ public class Flashlight : MonoBehaviour
             var direction = hit.point - transform.position;
             var rotation = Quaternion.LookRotation(direction);
 
-            transform.rotation = Quaternion.Slerp(transform.rotation, rotation, 1f);
+            if (rotation != transform.rotation)
+            {
+                transform.rotation = Quaternion.Slerp(transform.rotation, rotation, rotationVelocity * Time.deltaTime);
+            }
         }
     }
 }

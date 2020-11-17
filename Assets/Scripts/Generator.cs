@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
-
-using UnityEditor;
 
 using UnityEngine;
 
-public class Generator : EditorWindow
+/// <summary>
+/// Generates mazes of a specified size.
+/// </summary>
+public class Generator : MonoBehaviour
 {
     /// <summary>
     /// The minimum allowable width and height (in number of walls) for the maze.
@@ -22,18 +22,20 @@ public class Generator : EditorWindow
     /// </summary>
     public const string WallTag = "Wall";
 
-    private int mazeSize = 21;
-
-    private GameObject floor;
-    private GameObject wallPrefab;
-    
-    private Vector3 floorScale;
-    private int[,] mazeData;
+    /// <summary>
+    /// The default width and height (in number of walls) of the maze.
+    /// </summary>
+    public int defaultSize = 21;
 
     /// <summary>
-    /// A collection of walls that have already been generated.
+    /// The game object to use as the floor for any mazes.
     /// </summary>
-    private readonly List<GameObject> walls = new List<GameObject>();
+    public GameObject floor;
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public GameObject wallPrefab;
 
     /// <summary>
     /// Gets whether a maze has been generated:
@@ -42,86 +44,64 @@ public class Generator : EditorWindow
     public bool IsGenerated { get; private set; } = false;
 
     /// <summary>
-    /// Shows the custom window in the editor.
+    /// The width and height (in number of walls) of the maze that is
+    /// generated, set by the parameter to <see cref="NewMaze(int)"/>.
     /// </summary>
-    [MenuItem("Custom/Maze Generation")]
-    public static void ShowWindow()
+    private int mazeSize;
+
+    /// <summary>
+    /// The local scale of the floor on which this maze rests.
+    /// </summary>
+    private Vector3 floorScale;
+
+    /// <summary>
+    /// The array of abstract representations of walls
+    /// </summary>
+    private int[,] mazeData;
+
+    /// <summary>
+    /// A collection of walls that have already been generated and make up
+    /// the current maze.
+    /// </summary>
+    private readonly List<GameObject> walls = new List<GameObject>();
+
+    /// <summary>
+    /// Use this for initialization.
+    /// </summary>
+    protected void Start()
     {
-        GetWindow<Generator>();
+        mazeSize = Mathf.Clamp(defaultSize, MinMazeSize, MaxMazeSize);
+        IsGenerated = MazeGenerationWindow.WallsExist();
+
+        // If a maze is not already created, create one
+        if (IsGenerated == false)
+        {
+            NewMaze(defaultSize);
+        }
     }
 
     /// <summary>
-    /// This method is invoked to set up the custom window whenever its GUI is reloaded.
+    /// Generates a new maze.
     /// </summary>
-    private void OnGUI()
+    /// <param name="size">The width and height (in number of walls) of the maze.</param>
+    public void NewMaze(int size)
     {
-        GUI.enabled = true;
-
-        GUILayout.Label("Generate Maze", EditorStyles.boldLabel);
-
-        // Create user-input inspector values
-        mazeSize = EditorGUILayout.IntField("Maze Size", mazeSize);
-        floor = EditorGUILayout.ObjectField("Floor", floor, typeof(GameObject), allowSceneObjects: true) as GameObject;
-        wallPrefab = EditorGUILayout.ObjectField("Walls", wallPrefab, typeof(GameObject), allowSceneObjects: true) as GameObject;
-
-        // Disable generate button if maze already generated
-        GUI.enabled = !IsGenerated;
-        if (GUILayout.Button("Generate Maze!"))
+        if (size < MinMazeSize || size > MaxMazeSize)
         {
-            if (mazeSize % 2 == 0)
-            {
-                ShowNotification(new GUIContent("Maze Size must be an odd number"));
-
-                GUI.enabled = false;
-            }
-            else if (mazeSize < MinMazeSize || mazeSize > MaxMazeSize)
-            {
-                ShowNotification(new GUIContent($"Maze Size must be within interval [{MinMazeSize}, {MaxMazeSize}]"));
-
-                GUI.enabled = false;
-            }
-            else if (floor is null)
-            {
-                ShowNotification(new GUIContent("No floor object selected"));
-
-                GUI.enabled = false;
-            }
-            else if (wallPrefab is null)
-            {
-                ShowNotification(new GUIContent("No wall objects selected"));
-
-                GUI.enabled = false;
-            }
-            else
-            {
-                // If all inspector values valid, generate maze
-                GenerateMaze();
-            }
+            throw new System.ArgumentException($"Size must be in interval [{MinMazeSize}, {MaxMazeSize}].", nameof(size));
         }
 
-        // Disable destroy button if maze not yet generated
-        GUI.enabled = true;
-        if (GUILayout.Button("Destroy Maze!"))
+        if (size % 2 == 0)
         {
-            DestroyMaze();
-            IsGenerated = false;
+            throw new System.ArgumentException($"Size must be an even number.", nameof(size));
         }
 
-        GUI.enabled = true;
-    }
-    
-    /// <summary>
-    /// Calculates and instantiates a new maze in the scene.
-    /// </summary>
-    void GenerateMaze()
-    {
-        if (IsGenerated)
-        {
-            throw new System.InvalidOperationException("Maze should not be generated twice in a row!");
-        }
+        // If a maze already exists, destroy it
+        DestroyMaze();
 
-        floorScale = floor.transform.localScale;
+        mazeSize = size;
         mazeData = new int[mazeSize, mazeSize];
+        floorScale = floor.transform.localScale;
 
         CalculateMaze();
         InstantiateMaze();
@@ -132,40 +112,25 @@ public class Generator : EditorWindow
     /// <summary>
     /// Destroys all walls composing a maze that has already been generated.
     /// </summary>
-    void DestroyMaze()
+    public void DestroyMaze()
     {
         // Destroy all generated walls
-        if (walls.Count > 0)
+        foreach (var wall in walls)
         {
-            foreach (var wall in walls)
-            {
-                DestroyImmediate(wall);
-            }
-
-            walls.Clear();
-        }
-        else
-        {
-            var children = from wall in GameObject.FindGameObjectsWithTag(WallTag)
-                           where wall.tag == WallTag
-                           select wall;
-
-            foreach (var child in children)
-            {
-                DestroyImmediate(child);
-            }
+            DestroyImmediate(wall);
         }
 
+        walls.Clear();
         IsGenerated = false;
     }
 
     int GetMazeElement(int x, int y)
     {
-        if(x < 0 || x > mazeSize - 1 || y < 0 || y > mazeSize - 1)
+        if (x < 0 || x > mazeSize - 1 || y < 0 || y > mazeSize - 1)
         {
             return -1;
         }
-        
+
         return mazeData[x, y];
     }
     
