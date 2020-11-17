@@ -230,6 +230,9 @@ MonoBehaviour:
   maxMoveVelocity: 15
   moveAcceleration: 2
   moveDeceleration: 1
+  maxRotationVelocity: 120
+  rotationAcceleration: 5
+  rotationDeceleration: 10
 --- !u!54 &1023917884
 Rigidbody:
   m_ObjectHideFlags: 0

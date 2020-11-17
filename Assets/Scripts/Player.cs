@@ -6,27 +6,63 @@
 public class Player : MonoBehaviour
 {
     /// <summary>
-    /// The maximum velocity (in units/frame) magnitude at which
+    /// The maximum velocity magnitude (in units/second) at which
     /// the player moves when any movement keys are held.
     /// </summary>
     public float maxMoveVelocity;
 
     /// <summary>
-    /// The acceleration (in units/frame/frame) magnitude applied
+    /// The acceleration magnitude (in units/second/second) applied
     /// to the player when any movement keys are held.
     /// </summary>
     public float moveAcceleration;
 
     /// <summary>
-    /// The deceleration (in units/frame/frame) applied
-    /// to the player when no movement keys are held.
+    /// The deceleration magnitude (in units/second/second) applied
+    /// to slow down the player when no movement keys are held.
     /// </summary>
     public float moveDeceleration;
 
     /// <summary>
-    /// Gets the current velocity of the player.
+    /// The maximum angular velocity magnitude (in degrees/second) at which
+    /// the player rotates when any rotation keys are held.
     /// </summary>
-    public Vector3 Velocity { get; private set; }
+    public float maxRotationVelocity;
+
+    /// <summary>
+    /// The angular acceleration magnitude (in degrees/second/second) applied
+    /// to the player when any rotation keys are held.
+    /// </summary>
+    public float rotationAcceleration;
+
+    /// <summary>
+    /// The angular deceleration magnitude (in degrees/second/second) applied
+    /// to slow down the player when no rotation keys are held.
+    /// </summary>
+    public float rotationDeceleration;
+
+    /// <summary>
+    /// Gets the current velocity (in units/second) of the player.
+    /// </summary>
+    public Vector3 AbsoluteVelocity { get; private set; }
+
+    /// <summary>
+    /// Gets the current velocity (in units/second) of the player
+    /// toward the current facing direction.
+    /// </summary>
+    /// <see cref="FacingDirection"/>
+    public float RelativeVelocity { get; private set; }
+
+    /// <summary>
+    /// Gets the current angular velocity (in degrees/second) of the player
+    /// around the Y-axis.
+    /// </summary>
+    public float AngularVelocity { get; private set; }
+
+    /// <summary>
+    /// Gets the current facing direction of the player.
+    /// </summary>
+    public Vector3 FacingDirection { get; private set; } = Vector3.forward;
 
     /// <summary>
     /// Start is called before the first frame update.
@@ -46,70 +82,146 @@ public class Player : MonoBehaviour
             return;
         }
 
-        UpdateMove();
+        UpdateRotation();
+        UpdateMoveRelative();
     }
 
     /// <summary>
-    /// Moves the player by applying an acceleration if any movement keys
-    /// are held and a deceleration when no movement keys are held.
+    /// Rotates the player by applying an angular acceleration when left or right
+    /// is held and a deceleration when neither is held.
     /// </summary>
-    private void UpdateMove()
+    private void UpdateRotation()
     {
+        var rb = GetComponent<Rigidbody>();
+
+        // Shorthand for keys that are held
+        bool right = VirtualKey.Right.IsHeld();
+        bool left = VirtualKey.Left.IsHeld();
+
+        // Update angular velocity
+        if (right ^ left)
+        {
+            // If right/left held, accelerate rotation
+            float direction = right ? 1f : -1f;
+
+            // Calculate new velocity based on previous velocity
+            AngularVelocity = Mathf.MoveTowards(
+                AngularVelocity,
+                maxRotationVelocity * Time.deltaTime * direction,
+                rotationAcceleration * Time.deltaTime);
+        }
+        else
+        {
+            // If right/left not held, decelerate rotation
+            AngularVelocity = Mathf.MoveTowards(
+                AngularVelocity,
+                0f,
+                rotationDeceleration * Time.deltaTime);
+        }
+
+        // Rotate and face direction of velocity
+        FacingDirection = Quaternion.AngleAxis(AngularVelocity, Vector3.up) * FacingDirection;
+        rb?.MoveRotation(Quaternion.LookRotation(FacingDirection, Vector3.up));
+    }
+
+    /// <summary>
+    /// Moves the player by applying an acceleration towards or away from the
+    /// current facing direction when up or down is held and a deceleration
+    /// due to friction when neither is held.
+    /// </summary>
+    private void UpdateMoveRelative()
+    {
+        var rb = GetComponent<Rigidbody>();
+
+        // Shorthand for keys that are held
+        bool up = VirtualKey.Up.IsHeld();
+        bool down = VirtualKey.Down.IsHeld();
+
+        // Update relative velocity
+        if (up ^ down)
+        {
+            // If up/down held, accelerate
+            float direction = up ? 1f : -1f;
+
+            // Calculate new velocity based on previous velocity
+            RelativeVelocity = Mathf.MoveTowards(
+                RelativeVelocity,
+                maxMoveVelocity * Time.deltaTime * direction,
+                moveAcceleration * Time.deltaTime);
+        }
+        else
+        {
+            // If up/down not held, decelerate
+            RelativeVelocity = Mathf.MoveTowards(
+                RelativeVelocity,
+                0f,
+                moveDeceleration * Time.deltaTime);
+        }
+
+        // Update absolute velocity and move toward or away from facing direction
+        AbsoluteVelocity = RelativeVelocity * FacingDirection;
+        rb?.MovePosition(transform.position + AbsoluteVelocity);
+    }
+
+    /// <summary>
+    /// Moves the player by applying an absolute acceleration if any movement keys
+    /// are held and a deceleration due to friction when no movement keys are held.
+    /// </summary>
+    private void UpdateMoveAbsolute()
+    {
+        var rb = GetComponent<Rigidbody>();
+        var absoluteVelocity = Vector3.zero;
+
         // Shorthand for keys that are held
         bool right = VirtualKey.Right.IsHeld();
         bool left = VirtualKey.Left.IsHeld();
         bool up = VirtualKey.Up.IsHeld();
         bool down = VirtualKey.Down.IsHeld();
 
-        // Initialize acceleration and deceleration due to friction
-        var acceleration = Vector3.zero;
-        (bool x, bool z) decelerate = (right == left, up == down);
-
-        if (decelerate.x == false)
+        // Update vertical velocity component
+        if (right ^ left)
         {
-            // If right/left held, accelerate right/left
-            acceleration.x = right ? 1f : -1f;
+            // If right/left held, accelerate horizontally
+            float direction = right ? 1f : -1f;
+
+            // Calculate new velocity based on previous velocity
+            absoluteVelocity.x = Mathf.MoveTowards(
+                AbsoluteVelocity.x,
+                maxMoveVelocity * Time.deltaTime * direction,
+                moveAcceleration * Time.deltaTime);
+        }
+        else
+        {
+            // If right/left not held, decelerate horizontally
+            absoluteVelocity.x = Mathf.MoveTowards(
+                AbsoluteVelocity.x,
+                0f,
+                moveDeceleration * Time.deltaTime);
         }
 
-        if (decelerate.z == false)
+        // Update horizontal velocity component
+        if (up ^ down)
         {
-            // If up/down held, accelerate up/down
-            acceleration.z = up ? 1f : -1f;
+            // If up/down held, accelerate vertically
+            float direction = up ? 1f : -1f;
+
+            // Calculate new velocity based on previous velocity
+            absoluteVelocity.z = Mathf.MoveTowards(
+                AbsoluteVelocity.z,
+                maxMoveVelocity * Time.deltaTime * direction,
+                moveAcceleration * Time.deltaTime);
+        }
+        else
+        {
+            // If up/down not held, decelerate vertically
+            absoluteVelocity.z = Mathf.MoveTowards(
+                AbsoluteVelocity.z,
+                0f,
+                moveDeceleration * Time.deltaTime);
         }
 
-        // Scale acceleration to constant acceleration magnitude
-        acceleration.Normalize();
-        acceleration *= moveAcceleration;
-
-        // Calculate new velocity based on previous velocity
-        var velocity = Velocity + acceleration;
-
-        if (velocity.magnitude > maxMoveVelocity)
-        {
-            // Scale new velocity to max velocity magnitude
-            velocity = velocity.normalized * maxMoveVelocity;
-        }
-
-        if (decelerate.x || decelerate.z)
-        {
-            // If right/left or up/down not held, decelerate horizontally or vertically
-            var target = new Vector3(
-                    decelerate.x ? 0f : velocity.x,
-                    velocity.y,
-                    decelerate.z ? 0f : velocity.z);
-            velocity = Vector3.MoveTowards(velocity, target, moveDeceleration);
-        }
-
-        // Update velocity and move
-        Velocity = velocity;
-
-        // Face direction of velocity
-        var rb = GetComponent<Rigidbody>();
-        if (velocity != Vector3.zero)
-        {
-            rb?.MoveRotation(Quaternion.LookRotation(velocity));
-        }
-
-        rb?.MovePosition(transform.position + Velocity * Time.deltaTime);
+        // Update absolute velocity and move
+        AbsoluteVelocity = absoluteVelocity;
+        rb?.MovePosition(transform.position + AbsoluteVelocity);
     }
 }
