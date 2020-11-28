@@ -28,14 +28,19 @@ public class Generator : MonoBehaviour
     public int defaultSize = 21;
 
     /// <summary>
-    /// The game object to use as the floor for any mazes.
+    /// The game object to use as the floor for the maze.
     /// </summary>
     public GameObject floor;
 
     /// <summary>
-    /// 
+    /// The game object to use as the walls of the maze.
     /// </summary>
     public GameObject wallPrefab;
+
+    /// <summary>
+    /// Whether the generator should automatically generate a maze on startup.
+    /// </summary>
+    public bool autoGenerate;
 
     /// <summary>
     /// Gets whether a maze has been generated:
@@ -71,10 +76,10 @@ public class Generator : MonoBehaviour
     protected void Start()
     {
         mazeSize = Mathf.Clamp(defaultSize, MinMazeSize, MaxMazeSize);
-        IsGenerated = MazeGenerationWindow.WallsExist();
+        IsGenerated = !autoGenerate;
 
         // If a maze is not already created, create one
-        if (IsGenerated == false)
+        if (!IsGenerated)
         {
             NewMaze(defaultSize);
         }

@@ -546,6 +546,7 @@ MonoBehaviour:
   floor: {fileID: 1301125505}
   wallPrefab: {fileID: 8553159845057599082, guid: 53c3897f2790e8c449b141e527d3bd53,
     type: 3}
+  autoGenerate: 1
 --- !u!1 &1884091633
 GameObject:
   m_ObjectHideFlags: 0
