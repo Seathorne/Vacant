@@ -3,7 +3,7 @@
 /// <summary>
 /// A light that aim at the current mouse location.
 /// </summary>
-public class Flashlight : MonoBehaviour
+public class Flashlight : Item
 {
     /// <summary>
     /// The angular velocity magnitude (in degrees/second) at which
@@ -14,7 +14,7 @@ public class Flashlight : MonoBehaviour
     /// <summary>
     /// Start is called before the first frame update.
     /// </summary>
-    protected void Start()
+    private void Start()
     {
 
     }
@@ -22,7 +22,7 @@ public class Flashlight : MonoBehaviour
     /// <summary>
     /// Update is called once per frame.
     /// </summary>
-    protected void Update()
+    private void Update()
     {
         if (GameManager.IsPaused)
         {

@@ -35,7 +35,17 @@ public enum VirtualKey
     Unpause,
 
     /// <summary>
-    /// A key that will allow the player to switch which item is currently held.
+    /// A key that will pick up an item.
     /// </summary>
-    SwitchItem
+    PickUpItem,
+
+    /// <summary>
+    /// A key that will drop the held item that is currently active.
+    /// </summary>
+    DropItem,
+
+    /// <summary>
+    /// A key that will allow the player to swap which held item is currently active.
+    /// </summary>
+    SwapItem
 }

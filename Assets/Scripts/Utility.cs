@@ -20,7 +20,9 @@ public static class Utility
             { VirtualKey.Down, (key: KeyCode.S, alt: KeyCode.DownArrow) },
             { VirtualKey.Pause, (key: KeyCode.Escape, alt: KeyCode.P) },
             { VirtualKey.Unpause, (key: KeyCode.Escape, alt: KeyCode.P) },
-            { VirtualKey.SwitchItem, (key: KeyCode.Q, alt: null) },
+            { VirtualKey.PickUpItem, (key: KeyCode.Q, alt: null) },
+            { VirtualKey.DropItem, (key: KeyCode.E, alt: null) },
+            { VirtualKey.SwapItem, (key: KeyCode.LeftShift, alt: null) },
         };
 
     /// <summary>
