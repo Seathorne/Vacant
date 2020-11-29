@@ -95,8 +95,7 @@ public class Player : MonoBehaviour
             if (item is Flashlight)
             {
                 // Set flashlight active
-                item.SetActive(true);
-                HeldItem = item;
+                BringOutItem(item);
             }
         }
     }
@@ -150,7 +149,7 @@ public class Player : MonoBehaviour
             item.transform.parent = transform;
 
             // Hide item
-            item.SetActive(false);
+            item.SetHeldState(ItemState.HeldHidden);
         }
     }
 
@@ -172,11 +171,11 @@ public class Player : MonoBehaviour
         item.transform.parent = null;
 
         // Reveal dropped item
-        item.SetActive(true);
+        item.SetHeldState(ItemState.NotHeld);
 
         // Show next item
         HeldItem = heldItems.LastOrDefault();
-        HeldItem?.SetActive(true);
+        HeldItem?.SetHeldState(ItemState.HeldOut);
     }
 
     /// <summary>
@@ -189,13 +188,13 @@ public class Player : MonoBehaviour
         if (nextIndex >= heldItems.Count)
         {
             // If holding last item, make none active
-            HeldItem?.SetActive(false);
+            HeldItem?.SetHeldState(ItemState.HeldHidden);
             HeldItem = null;
         }
         else
         {
             // Otherwise, cycle to next item
-            SwapActiveItem(heldItems[nextIndex]);
+            BringOutItem(heldItems[nextIndex]);
         }
     }
 
@@ -204,7 +203,7 @@ public class Player : MonoBehaviour
     /// activate the specified held item.
     /// </summary>
     /// <param name="item">The item to activate.</param>
-    private void SwapActiveItem(Item item)
+    private void BringOutItem(Item item)
     {
         if (item is null)
         {
@@ -212,11 +211,11 @@ public class Player : MonoBehaviour
         }
 
         // Hide previous item
-        HeldItem?.SetActive(false);
+        HeldItem?.SetHeldState(ItemState.HeldHidden);
 
         // Show current item
         HeldItem = item;
-        HeldItem.SetActive(true);
+        HeldItem.SetHeldState(ItemState.HeldOut);
     }
 
     /// <summary>
@@ -374,7 +373,7 @@ public class Player : MonoBehaviour
         {
             // If there is a potential item to pick up, pick it up
             PickUpItem(item);
-            SwapActiveItem(item);
+            BringOutItem(item);
             return item;
         }
 

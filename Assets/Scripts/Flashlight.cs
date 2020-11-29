@@ -29,7 +29,10 @@ public class Flashlight : Item
             return;
         }
 
-        UpdateRotation();
+        if (HeldState == ItemState.HeldOut)
+        {
+            UpdateRotation();
+        }
     }
 
     /// <summary>

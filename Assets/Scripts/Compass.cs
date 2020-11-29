@@ -31,8 +31,20 @@ public class Compass : Item
     /// </summary>
     private void Update()
     {
-        // Rotate compass needle to face exit
+        if (HeldState != ItemState.HeldHidden)
+        {
+            UpdateRotation();
+        }
+    }
+
+    /// <summary>
+    /// Rotates the compass needle to aim at a set location.
+    /// </summary>
+    private void UpdateRotation()
+    {
         var direction = pointLocation - transform.position;
+
+        // Only modify y-rotation
         var rotation = Quaternion.Euler(transform.rotation.x, Quaternion.LookRotation(direction).eulerAngles.y, transform.rotation.z);
 
         if (rotation != transform.rotation)
