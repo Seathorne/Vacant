@@ -32,22 +32,6 @@ public abstract class Item : MonoBehaviour
     public ItemState HeldState { get; private set; }
 
     /// <summary>
-    /// Use this for initialization.
-    /// </summary>
-    private void Start()
-    {
-
-    }
-
-    /// <summary>
-    /// Update is called once per frame.
-    /// </summary>
-    private void Update()
-    {
-
-    }
-
-    /// <summary>
     /// Sets this item's to be held and out, held and hidden, or not held.
     /// </summary>
     /// <param name="value">The new held state.</param>

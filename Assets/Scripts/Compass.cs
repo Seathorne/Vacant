@@ -29,6 +29,11 @@ public class Compass : Item
     /// </summary>
     private void Update()
     {
+        if (GameManager.IsPaused)
+        {
+            return;
+        }
+
         if (HeldState != ItemState.HeldHidden)
         {
             UpdateRotation();
