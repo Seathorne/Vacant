@@ -148,6 +148,19 @@ public class Player : MonoBehaviour
             // Add to children
             item.transform.parent = transform;
 
+            // Move item to specific location for visibility
+            switch (item)
+            {
+                case Flashlight flashlight:
+                    flashlight.transform.localPosition = new Vector3(0.6f, 0f, 0.25f);
+                    flashlight.transform.localRotation = Quaternion.Euler(5f, -10f, 0f);
+                    break;
+                case Compass compass:
+                    compass.transform.localPosition = new Vector3(0.5f, 0.05f, 0.6f);
+                    compass.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
+                    break;
+            }
+
             // Hide item
             item.SetHeldState(ItemState.HeldHidden);
         }

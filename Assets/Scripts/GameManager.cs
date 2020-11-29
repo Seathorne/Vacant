@@ -13,7 +13,7 @@ public class GameManager : MonoBehaviour
     /// <summary>
     /// Use this for initialization.
     /// </summary>
-    protected void Start()
+    private void Start()
     {
         Pause(setPaused: false);
     }
@@ -21,7 +21,7 @@ public class GameManager : MonoBehaviour
     /// <summary>
     /// Update is called once per frame.
     /// </summary>
-    protected void Update()
+    private void Update()
     {
         if (IsPaused == false && VirtualKey.Pause.JustPressed())
         {
