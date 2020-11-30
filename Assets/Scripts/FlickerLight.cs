@@ -64,14 +64,17 @@ public class FlickerLight : MonoBehaviour
     /// <summary>
     /// Update is called once per frame.
     /// </summary>
-    private void Update()
+    private void FixedUpdate()
     {
         if (GameManager.IsPaused)
         {
             return;
         }
-
-        UpdateFlicker();
+        
+        if(light.enabled == true)
+        {
+            UpdateFlicker();
+        }
     }
 
     /// <summary>

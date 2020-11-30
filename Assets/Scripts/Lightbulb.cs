@@ -23,7 +23,7 @@ public class Lightbulb : MonoBehaviour
     void FixedUpdate()
     {
         float distanceToPlayer = Vector3.Distance(playerObject.transform.position, transform.position);
-        float cullingDistance = 10.0f * Generator.wallScale;
+        float cullingDistance = 8.0f * Generator.wallScale;
  
         if (distanceToPlayer < cullingDistance){
             lightComponent.enabled = true;    
