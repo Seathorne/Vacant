@@ -1,10 +1,11 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
-
+using System.Linq;
 using UnityEngine;
 
 /// <summary>
-/// Provides static utility, helper, or extension methods.
+/// Provides static utility, helper, and extension methods.
 /// </summary>
 public static class Utility
 {
@@ -18,8 +19,7 @@ public static class Utility
             { VirtualKey.Left, (key: KeyCode.A, alt: KeyCode.LeftArrow) },
             { VirtualKey.Up, (key: KeyCode.W, alt: KeyCode.UpArrow) },
             { VirtualKey.Down, (key: KeyCode.S, alt: KeyCode.DownArrow) },
-            { VirtualKey.Pause, (key: KeyCode.Escape, alt: KeyCode.P) },
-            { VirtualKey.Unpause, (key: KeyCode.Escape, alt: KeyCode.P) },
+            { VirtualKey.TogglePause, (key: KeyCode.Escape, alt: KeyCode.P) },
             { VirtualKey.PickUpItem, (key: KeyCode.Q, alt: null) },
             { VirtualKey.DropItem, (key: KeyCode.E, alt: null) },
             { VirtualKey.SwapItem, (key: KeyCode.LeftShift, alt: null) },
@@ -65,5 +65,60 @@ public static class Utility
     public static void Print(params dynamic[] objects)
     {
         Debug.Log(string.Join(" ", objects));
+    }
+
+    /// <summary>
+    /// Prints the specified objects to the console window.
+    /// </summary>
+    /// <param name="objects">The objects to print.</param>
+    public static void Print(IEnumerable<dynamic> objects)
+    {
+        Debug.Log(string.Join(" ", objects));
+    }
+
+    /// <summary>
+    /// Performs the specified action on each element of the enumerable.
+    /// </summary>
+    /// <typeparam name="TSource">The type of each element.</typeparam>
+    /// <param name="source">The enumerable on whose elements the action will be performed.</param>
+    /// <param name="action">The action delegate to perform on each element.</param>
+    public static void ForEach<TSource>(this IEnumerable<TSource> source, Action<TSource> action)
+    {
+        foreach (var element in source)
+        {
+            action?.Invoke(element);
+        }
+    }
+
+    /// <summary>
+    /// Executes all the provided coroutines in parallel.
+    /// </summary>
+    /// <param name="mono">The <see cref="MonoBehaviour"/> object who will start the coroutines.</param>
+    /// <param name="coroutines">An enumerable of coroutines to be executed in parallel.</param>
+    /// <returns>Yield returns until all coroutines have been completed.</returns>
+    public static IEnumerator Parallel(MonoBehaviour mono, IEnumerable<Func<IEnumerator>> coroutines)
+    {
+        // Number of coroutines to run in parallel
+        int expectedCount = coroutines.Count();
+
+        // Number of completed coroutines
+        int doneCount = 0;
+        
+        foreach (var coroutine in coroutines)
+        {
+            mono.StartCoroutine(wrap(coroutine));
+        }
+
+        // Yield returns until all coroutines are complete
+        yield return new WaitUntil(() => doneCount >= expectedCount);
+
+        // Wraps a coroutine with an update to completion counter
+        IEnumerator wrap(Func<IEnumerator> coroutine)
+        {
+            yield return coroutine();
+
+            // Once a coroutine is complete, increment completion counter
+            doneCount++;
+        }
     }
 }

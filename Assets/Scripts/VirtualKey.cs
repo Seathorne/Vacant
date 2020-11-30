@@ -25,14 +25,9 @@ public enum VirtualKey
     Down,
 
     /// <summary>
-    /// A key that will pause the game.
+    /// A key that will pause or unpause the game.
     /// </summary>
-    Pause,
-
-    /// <summary>
-    /// A key that will unpause the game.
-    /// </summary>
-    Unpause,
+    TogglePause,
 
     /// <summary>
     /// A key that will pick up an item.

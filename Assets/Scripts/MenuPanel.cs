@@ -7,6 +7,11 @@ using UnityEngine;
 public abstract class MenuPanel : MonoBehaviour
 {
     /// <summary>
+    /// The layer on which all UI elements reside.
+    /// </summary>
+    public const int UILayer = 5;
+
+    /// <summary>
     /// The time (in seconds) it takes to open or close the menu.
     /// </summary>
     public float openCloseTime;
@@ -20,6 +25,11 @@ public abstract class MenuPanel : MonoBehaviour
     /// Whether the menu is currently open or closed.
     /// </summary>
     public bool IsOpen { get; private set; }
+
+    /// <summary>
+    /// This game object's <see cref="UnityEngine.CanvasGroup"/> component.
+    /// </summary>
+    public CanvasGroup CanvasGroup { get; protected set; }
 
     /// <summary>
     /// This game object's <see cref="UnityEngine.RectTransform"/> component.
@@ -41,21 +51,31 @@ public abstract class MenuPanel : MonoBehaviour
     /// </summary>
     public void ToggleIsOpen()
     {
-        SetIsOpen(!IsOpen);
+        Open(!IsOpen);
+    }
+
+    /// <summary>
+    /// Opens or closes the menu instantly.
+    /// </summary>
+    /// <param name="setOpen">Whether to open or close the menu.</param>
+    public void OpenInstantly(bool setOpen = true)
+    {
+        IsOpen = setOpen;
+        RectTransform.anchoredPosition = setOpen ? OpenPosition : ClosedPosition;
     }
 
     /// <summary>
     /// Begins opening or closing the menu.
     /// </summary>
     /// <param name="setOpen">Whether to open or close the menu.</param>
-    public void SetIsOpen(bool setOpen)
+    public void Open(bool setOpen = true)
     {
         IsOpen = setOpen;
 
         // Pause immediately if opening menu
         if (setOpen)
         {
-            FindObjectOfType<GameManager>()?.Pause();
+            GameManager.Pause();
         }
 
         if (currentCoroutine is Coroutine)
@@ -74,13 +94,13 @@ public abstract class MenuPanel : MonoBehaviour
     /// </summary>
     /// <param name="target">The target position towards which the menu will move.</param>
     /// <param name="speed">The speed (in units/second) at which the menu will move.</param>
-    /// <returns>Yield returns <see langword="null"/> to fulfill the requirements of a coroutine.</returns>
+    /// <returns>Yield returns <see langword="null"/> until the movement is complete.</returns>
     public IEnumerator MoveTowards(Vector2 target, float speed)
     {
         while (Vector2.Distance(RectTransform.anchoredPosition, target) >= 1f)
         {
             // Move towards target
-            RectTransform.anchoredPosition = Vector2.MoveTowards(RectTransform.anchoredPosition, target, speed * Time.unscaledDeltaTime);
+            RectTransform.anchoredPosition = Vector2.Lerp(RectTransform.anchoredPosition, target, speed * Time.unscaledDeltaTime);
             yield return null;
         }
 
@@ -88,6 +108,31 @@ public abstract class MenuPanel : MonoBehaviour
         RectTransform.anchoredPosition = target;
 
         // Pause/unpause if opening/closing menu
-        FindObjectOfType<GameManager>()?.Pause(setPaused: IsOpen);
+        GameManager.Pause(setPaused: IsOpen);
+    }
+
+    /// <summary>
+    /// Fades the provided <see cref="CanvasGroup"/> object from the start to the end opacity
+    /// over the specified duration.
+    /// </summary>
+    /// <param name="canvasGroup">The <see cref="CanvasGroup"/> object to fade.</param>
+    /// <param name="start">The starting opacity.</param>
+    /// <param name="end">The ending opacity.</param>
+    /// <param name="duration">The duration (in seconds) over which the fade should occur.</param>
+    /// <returns>Yield returns <see langword="null"/> until the fade is complete.</returns>
+    public static IEnumerator Fade(CanvasGroup canvasGroup, float start, float end, float duration)
+    {
+        canvasGroup.alpha = start;
+
+        float elapsed = 0f;
+        while (elapsed < duration)
+        {
+            elapsed += Time.unscaledDeltaTime;
+
+            canvasGroup.alpha = Mathf.Lerp(start, end, elapsed / duration);
+            yield return null;
+        }
+
+        canvasGroup.alpha = end;
     }
 }

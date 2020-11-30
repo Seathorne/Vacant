@@ -11,10 +11,12 @@ public class HelpPanel : MenuPanel
     private void Start()
     {
         RectTransform = GetComponent<RectTransform>();
+        CanvasGroup = GetComponent<CanvasGroup>();
+
         OpenPosition = Vector2.zero;
         ClosedPosition = new Vector2(RectTransform.rect.width, 0f);
 
-        SetIsOpen(false);
+        OpenInstantly(setOpen: false);
     }
 
     /// <summary>
