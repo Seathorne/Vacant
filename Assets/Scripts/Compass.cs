@@ -6,22 +6,22 @@
 public class Compass : Item
 {
     /// <summary>
-    /// The location toward which the compass always points.
-    /// </summary>
-    public Vector3 pointLocation;
-
-    /// <summary>
     /// The angular velocity magnitude (in degrees/second) at which
     /// the compass needle rotates toward the target location.
     /// </summary>
     public float rotationVelocity;
 
     /// <summary>
+    /// The location towards which the compass always points.
+    /// </summary>
+    public Vector3 PointLocation { get; set; }
+
+    /// <summary>
     /// Start is called before the first frame update.
     /// </summary>
     private void Start()
     {
-        
+
     }
 
     /// <summary>
@@ -45,7 +45,7 @@ public class Compass : Item
     /// </summary>
     private void UpdateRotation()
     {
-        var direction = pointLocation - transform.position;
+        var direction = PointLocation - transform.position;
 
         // Only modify y-rotation
         var rotation = Quaternion.Euler(transform.rotation.x, Quaternion.LookRotation(direction).eulerAngles.y, transform.rotation.z);

@@ -503,7 +503,7 @@ public class Generator : MonoBehaviour
         compassObject.tag = "Compass";
         
         compassObject.transform.localScale = new Vector3(scale, scale, scale);
-        ((Compass) compassObject.GetComponent(typeof(Compass))).pointLocation = GameObject.Find("Sunlight").transform.position;
+        compassObject.GetComponent<Compass>().PointLocation = GameObject.Find("Sunlight").transform.position;
         mazeObjects.Add(compassObject);
     }
     
