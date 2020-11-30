@@ -63,6 +63,11 @@ public class Generator : MonoBehaviour
     public GameObject ghostPrefab;
     
     /// <summary>
+    /// The prefab of the compass.
+    /// </summary>
+    public GameObject compassPrefab;
+    
+    /// <summary>
     /// The prefab of the maze exit doorway.
     /// </summary>
     public GameObject exitPrefab;
@@ -478,6 +483,30 @@ public class Generator : MonoBehaviour
         );
     }
     
+    void InstantiateCompass()
+    {
+        int x;
+        int y;
+        float floorOffset = floorScale * 5.0f;
+        float scale = wallScale * 0.2f;
+        Vector3 position = new Vector3();
+        GameObject compassObject;
+        
+        // Generate random coordinates till path space is found
+        while(this[(x = Random.Range(1, mazeSize - 1)), (y = Random.Range(1, mazeSize - 1))] != MazeElement.Path);
+        
+        position.x = wallScale / 2.0f + x * wallScale - floorOffset;
+        position.y = wallScale / 4.0f;
+        position.z = wallScale / 2.0f + y * wallScale - floorOffset;
+        
+        compassObject = Instantiate(compassPrefab, position, Quaternion.identity);
+        compassObject.tag = "Compass";
+        
+        compassObject.transform.localScale = new Vector3(scale, scale, scale);
+        ((Compass) compassObject.GetComponent(typeof(Compass))).pointLocation = GameObject.Find("Sunlight").transform.position;
+        mazeObjects.Add(compassObject);
+    }
+    
     void InstantiateMaze()
     {
         float floorOffset = floorScale * 5.0f;
@@ -528,5 +557,8 @@ public class Generator : MonoBehaviour
         {
             InstantiateGhost();
         }
+        
+        // Instantiate compass
+        InstantiateCompass();
     }
 }
