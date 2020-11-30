@@ -1,4 +1,7 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using System.Linq;
+
+using UnityEngine;
 
 /// <summary>
 /// A player that can move and pick up or use items using user input.
@@ -42,6 +45,16 @@ public class Player : MonoBehaviour
     public float rotationDeceleration;
 
     /// <summary>
+    /// The maximum range (in units) within which the player can pick up items.
+    /// </summary>
+    public float itemPickupRange;
+
+    /// <summary>
+    /// The items that the player currently holds.
+    /// </summary>
+    private readonly IList<Item> heldItems = new List<Item>();
+
+    /// <summary>
     /// Gets the current velocity (in units/second) of the player.
     /// </summary>
     public Vector3 AbsoluteVelocity { get; private set; }
@@ -65,17 +78,32 @@ public class Player : MonoBehaviour
     public Vector3 FacingDirection { get; private set; } = Vector3.forward;
 
     /// <summary>
+    /// The held item that is currently out.
+    /// </summary>
+    public Item HeldItem { get; private set; }
+
+    /// <summary>
     /// Start is called before the first frame update.
     /// </summary>
-    protected void Start()
+    private void Start()
     {
-        
+        foreach (var item in GetComponentsInChildren<Item>())
+        {
+            // Pick up all child objects
+            PickUpItem(item);
+
+            if (item is Flashlight)
+            {
+                // Set flashlight active
+                BringOutItem(item);
+            }
+        }
     }
 
     /// <summary>
     /// Update is called once per frame.
     /// </summary>
-    protected void Update()
+    private void Update()
     {
         if (GameManager.IsPaused)
         {
@@ -84,6 +112,123 @@ public class Player : MonoBehaviour
 
         UpdateRotation();
         UpdateMoveRelative();
+
+        if (VirtualKey.SwapItem.JustPressed())
+        {
+            CycleActiveItem();
+        }
+
+        if (VirtualKey.PickUpItem.JustPressed())
+        {
+            TryPickUpItem();
+        }
+
+        if (VirtualKey.DropItem.JustPressed())
+        {
+            DropItem(HeldItem);
+        }
+    }
+
+    /// <summary>
+    /// Makes the player begin holding the specified item.
+    /// </summary>
+    /// <param name="item">The item for the player to pick up.</param>
+    public void PickUpItem(Item item)
+    {
+        if (item is null)
+        {
+            return;
+        }
+
+        if (heldItems.Contains(item) == false)
+        {
+            // If not already holding this item, pick it up
+            heldItems.Add(item);
+
+            // Add to children
+            item.transform.parent = transform;
+
+            // Move item to specific location for visibility
+            switch (item)
+            {
+                case Flashlight flashlight:
+                    flashlight.transform.localPosition = new Vector3(0.6f, 0f, 0.25f);
+                    flashlight.transform.localRotation = Quaternion.Euler(5f, -10f, 0f);
+                    break;
+                case Compass compass:
+                    compass.transform.localPosition = new Vector3(0.5f, 0.05f, 0.6f);
+                    compass.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
+                    break;
+            }
+
+            // Hide item
+            item.SetHeldState(ItemState.HeldHidden);
+        }
+    }
+
+    /// <summary>
+    /// Makes the player drop the held item that is currently active.
+    /// </summary>
+    /// <param name="item">The item for the player to drop.</param>
+    public void DropItem(Item item)
+    {
+        if (item is null)
+        {
+            return;
+        }
+
+        // If holding this item, drop it
+        heldItems.Remove(item);
+
+        // Remove from children
+        item.transform.parent = null;
+
+        // Reveal dropped item
+        item.SetHeldState(ItemState.NotHeld);
+
+        // Show next item
+        HeldItem = heldItems.LastOrDefault();
+        HeldItem?.SetHeldState(ItemState.HeldOut);
+    }
+
+    /// <summary>
+    /// Makes the player switch which held item is currently active.
+    /// Having no item active is a valid result.
+    /// </summary>
+    public void CycleActiveItem()
+    {
+        int nextIndex = heldItems.IndexOf(HeldItem) + 1;
+        if (nextIndex >= heldItems.Count)
+        {
+            // If holding last item, make none active
+            HeldItem?.SetHeldState(ItemState.HeldHidden);
+            HeldItem = null;
+        }
+        else
+        {
+            // Otherwise, cycle to next item
+            BringOutItem(heldItems[nextIndex]);
+        }
+    }
+
+    /// <summary>
+    /// Makes the player hide the held item that was previously active and
+    /// activate the specified held item.
+    /// </summary>
+    /// <param name="item">The item to activate.</param>
+    private void BringOutItem(Item item)
+    {
+        if (item is null)
+        {
+            return;
+        }
+
+        // Hide previous item
+        HeldItem?.SetHeldState(ItemState.HeldHidden);
+
+        // Show current item
+        HeldItem = item;
+        HeldItem.SetHeldState(ItemState.HeldOut);
     }
 
     /// <summary>
@@ -223,5 +368,28 @@ public class Player : MonoBehaviour
         // Update absolute velocity and move
         AbsoluteVelocity = absoluteVelocity;
         rb?.MovePosition(transform.position + AbsoluteVelocity);
+    }
+
+    /// <summary>
+    /// If any non-held item is within range, picks it up.
+    /// </summary>
+    /// <returns>The item that was picked up, if one was; <see langword="null"/> otherwise.</returns>
+    private Item TryPickUpItem()
+    {
+        // Select all non-held items within range
+        var validItems = from potentialItem in FindObjectsOfType<Item>()
+                         where Vector3.Distance(potentialItem.transform.position, transform.position) <= itemPickupRange
+                            && heldItems.Contains(potentialItem) == false
+                         select potentialItem;
+
+        if (validItems.FirstOrDefault() is Item item)
+        {
+            // If there is a potential item to pick up, pick it up
+            PickUpItem(item);
+            BringOutItem(item);
+            return item;
+        }
+
+        return null;
     }
 }

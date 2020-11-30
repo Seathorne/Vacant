@@ -66,7 +66,7 @@ public class MazeGenerationWindow : EditorWindow
         }
 
         // Enable destroy all walls button if any walls exist
-        GUI.enabled = generator?.IsGenerated == false && WallsExist();
+        GUI.enabled = WallsExist();
         if (GUILayout.Button("Destroy All Walls!"))
         {
             DestroyAllWalls();

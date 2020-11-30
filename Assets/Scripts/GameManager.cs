@@ -1,10 +1,16 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 
 /// <summary>
 /// Represents global game logic and game state.
 /// </summary>
 public class GameManager : MonoBehaviour
 {
+    /// <summary>
+    /// The button that opens the pause/help menu.
+    /// </summary>
+    public Button helpButton;
+
     /// <summary>
     /// Whether the game is currently paused.
     /// </summary>
@@ -13,23 +19,29 @@ public class GameManager : MonoBehaviour
     /// <summary>
     /// Use this for initialization.
     /// </summary>
-    protected void Start()
+    private void Start()
     {
-        Pause(setPaused: false);
+
     }
 
     /// <summary>
     /// Update is called once per frame.
     /// </summary>
-    protected void Update()
+    private void Update()
     {
-        if (IsPaused == false && VirtualKey.Pause.JustPressed())
+        // If pausing is currently allowed
+        if (helpButton.isActiveAndEnabled)
         {
-            Pause();
-        }
-        else if (IsPaused && VirtualKey.Unpause.JustPressed())
-        {
-            Pause(setPaused: false);
+            if (VirtualKey.TogglePause.JustPressed())
+            {
+                // Relay keyboard -> button press
+                helpButton.GetComponent<Graphic>().CrossFadeColor(helpButton.colors.highlightedColor, helpButton.colors.fadeDuration, ignoreTimeScale: true, useAlpha: true);
+                helpButton.onClick.Invoke();
+            }
+            else if (VirtualKey.TogglePause.JustReleased())
+            {
+                helpButton.GetComponent<Graphic>().CrossFadeColor(helpButton.colors.normalColor, helpButton.colors.fadeDuration, ignoreTimeScale: true, useAlpha: true);
+            }
         }
     }
 
@@ -37,7 +49,7 @@ public class GameManager : MonoBehaviour
     /// Pauses or unpauses the game.
     /// </summary>
     /// <param name="setPaused"><see langword="true"/> to pause the game; <see langword="false"/> to unpause.</param>
-    public void Pause(bool setPaused = true)
+    public static void Pause(bool setPaused = true)
     {
         Time.timeScale = setPaused ? 0f : 1f;
         IsPaused = setPaused;
