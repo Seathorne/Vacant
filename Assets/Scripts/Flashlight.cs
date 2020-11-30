@@ -87,7 +87,7 @@ public class Flashlight : Item
     private void UpdateHitGhost()
     {
         var prevGhost = RecentGhostHit;
-        RecentGhostHit = RecentHit.collider.GetComponent<Ghost>();
+        RecentGhostHit = RecentHit.collider?.GetComponent<Ghost>();
 
         if (prevGhost is Ghost && RecentGhostHit != prevGhost)
         {

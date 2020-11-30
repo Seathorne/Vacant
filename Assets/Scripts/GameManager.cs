@@ -7,6 +7,21 @@ using UnityEngine.UI;
 public class GameManager : MonoBehaviour
 {
     /// <summary>
+    /// The panel that shows the title screen.
+    /// </summary>
+    public StartPanel startPanel;
+
+    /// <summary>
+    /// The panel that shows the ending screen.
+    /// </summary>
+    public EndPanel endPanel;
+
+    /// <summary>
+    /// The panel that shows the help/information screen.
+    /// </summary>
+    public HelpPanel helpPanel;
+
+    /// <summary>
     /// The button that opens the pause/help menu.
     /// </summary>
     public Button helpButton;
@@ -21,7 +36,9 @@ public class GameManager : MonoBehaviour
     /// </summary>
     private void Start()
     {
-
+        startPanel.gameObject.SetActive(true);
+        helpPanel.gameObject.SetActive(true);
+        helpButton.gameObject.SetActive(true);
     }
 
     /// <summary>
@@ -53,5 +70,29 @@ public class GameManager : MonoBehaviour
     {
         Time.timeScale = setPaused ? 0f : 1f;
         IsPaused = setPaused;
+    }
+
+    /// <summary>
+    /// Fades in the end screen.
+    /// </summary>
+    public void Win()
+    {
+        StartCoroutine(endPanel.FadeIn());
+    }
+
+    /// <summary>
+    /// Restarts the game scene.
+    /// </summary>
+    public void Restart()
+    {
+        UnityEngine.SceneManagement.SceneManager.LoadScene("SampleScene");
+    }
+
+    /// <summary>
+    /// Exits the game.
+    /// </summary>
+    public void Exit()
+    {
+        Application.Quit();
     }
 }

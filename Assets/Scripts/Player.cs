@@ -110,6 +110,8 @@ public class Player : MonoBehaviour
             return;
         }
 
+        UpdateWin();
+
         UpdateRotation();
         UpdateMoveRelative();
 
@@ -229,6 +231,23 @@ public class Player : MonoBehaviour
         // Show current item
         HeldItem = item;
         HeldItem.SetHeldState(ItemState.HeldOut);
+    }
+
+    /// <summary>
+    /// If the player is within range of the exit, transitions to the end screen.
+    /// </summary>
+    private void UpdateWin()
+    {
+        float winRange = itemPickupRange;
+
+        var exits = from exit in GameObject.FindGameObjectsWithTag(Tag.Exit)
+                    where Vector3.Distance(exit.transform.position, transform.position) <= winRange
+                    select exit;
+
+        if (exits.Count() >= 1)
+        {
+            FindObjectOfType<GameManager>().Win();
+        }
     }
 
     /// <summary>

@@ -18,16 +18,6 @@ public class Generator : MonoBehaviour
     public const int MaxMazeSize = 101;
 
     /// <summary>
-    /// The tag given to all walls generated as part of the maze.
-    /// </summary>
-    public const string WallTag = "Wall";
-    
-    /// <summary>
-    /// The tag given to all ghosts generated as part of the maze.
-    /// </summary>
-    public const string GhostTag = "Ghost";
-
-    /// <summary>
     /// The default width and height (in number of elements) of the maze.
     /// </summary>
     public int defaultMazeSize = 21;
@@ -401,7 +391,7 @@ public class Generator : MonoBehaviour
                 
                 lightObject = Instantiate(lightPrefab, position, Quaternion.identity);
                 lightObject.transform.parent = lightsEmpty.transform;
-                lightObject.tag = "Light";
+                lightObject.tag = Tag.Light;
                 
                 lightObject.transform.localScale = new Vector3(scale, scale, scale);
                 mazeObjects.Add(lightObject);
@@ -427,7 +417,7 @@ public class Generator : MonoBehaviour
         
         ghostObject = Instantiate(ghostPrefab, position, Quaternion.identity);
         ghostObject.transform.parent = ghostsEmpty.transform;
-        ghostObject.tag = "Ghost";
+        ghostObject.tag = Tag.Ghost;
         
         ghostObject.transform.localScale = ghostPrefab.transform.localScale * scale;
         mazeObjects.Add(ghostObject);
@@ -443,7 +433,7 @@ public class Generator : MonoBehaviour
         
         exitObject = Instantiate(exitPrefab, position, Quaternion.identity);
         exitObject.transform.parent = transform.parent;
-        exitObject.tag = "Exit";
+        exitObject.tag = Tag.Exit;
         
         exitObject.transform.localScale = new Vector3(scale, scale, scale);
         mazeObjects.Add(exitObject);
@@ -500,7 +490,7 @@ public class Generator : MonoBehaviour
         position.z = wallScale / 2.0f + y * wallScale - floorOffset;
         
         compassObject = Instantiate(compassPrefab, position, Quaternion.identity);
-        compassObject.tag = "Compass";
+        compassObject.tag = Tag.Compass;
         
         compassObject.transform.localScale = new Vector3(scale, scale, scale);
         compassObject.GetComponent<Compass>().PointLocation = GameObject.Find("Sunlight").transform.position;
@@ -527,7 +517,7 @@ public class Generator : MonoBehaviour
                     case MazeElement.Wall:
                         prefab = wallPrefab;
                         parent = wallsEmpty;
-                        tag = WallTag;
+                        tag = Tag.Wall;
                         break;
                 }
                 

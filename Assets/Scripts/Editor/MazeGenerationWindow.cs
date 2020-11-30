@@ -79,7 +79,7 @@ public class MazeGenerationWindow : EditorWindow
     /// <returns><see langword="true"/> if any walls already exist; <see langword="false"/> otherwise.</returns>
     public static bool WallsExist()
     {
-        return GameObject.FindGameObjectsWithTag(Generator.WallTag).Count() > 0;
+        return GameObject.FindGameObjectsWithTag(Tag.Wall).Count() > 0;
     }
 
     /// <summary>
@@ -87,7 +87,7 @@ public class MazeGenerationWindow : EditorWindow
     /// </summary>
     public static void DestroyAllWalls()
     {
-        foreach (var wall in GameObject.FindGameObjectsWithTag(Generator.WallTag))
+        foreach (var wall in GameObject.FindGameObjectsWithTag(Tag.Wall))
         {
             DestroyImmediate(wall);
         }
