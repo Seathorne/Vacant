@@ -41,7 +41,7 @@ public class MazeGenerationWindow : EditorWindow
 
         // Create user-input inspector values
         generator = EditorGUILayout.ObjectField("Maze Generator", generator, typeof(Generator), allowSceneObjects: true) as Generator;
-        var size = EditorGUILayout.IntField("Maze Size", generator?.defaultSize ?? Generator.MinMazeSize);
+        var size = EditorGUILayout.IntField("Maze Size", generator?.defaultMazeSize ?? Generator.MinMazeSize);
 
         // Enable generate maze button if generator selected
         GUI.enabled = generator is Generator;
