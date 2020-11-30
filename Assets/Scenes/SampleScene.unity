@@ -1176,7 +1176,7 @@ MonoBehaviour:
   maxRotationVelocity: 120
   rotationAcceleration: 15
   rotationDeceleration: 10
-  itemPickupRange: 0
+  itemPickupRange: 5
 --- !u!54 &1023917884
 Rigidbody:
   m_ObjectHideFlags: 0

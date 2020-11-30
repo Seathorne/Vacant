@@ -79,8 +79,9 @@ public class FlickerLight : MonoBehaviour
     /// </summary>
     private void UpdateFlicker()
     {
-        // Distance to nearest ghost [replace Player type with Ghost]
-        float distance = FindObjectsOfType<Player>().Min(x => Vector3.Distance(x.transform.position, transform.position));
+        // Distance to nearest ghost
+        float distance = FindObjectsOfType<Ghost>()
+            .Min(x => Vector3.Distance(x.transform.position, transform.position));
 
         // If any ghost is within set range, flicker chance linearly decreases
         //  from max to min depending on its proximity

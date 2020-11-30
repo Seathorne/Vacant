@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 1603878304148358324}
   - component: {fileID: 2714884046181620104}
   - component: {fileID: 5683720824243449389}
+  - component: {fileID: 8688300654672729964}
   m_Layer: 0
   m_Name: Lightbulb
   m_TagString: Untagged
@@ -82,6 +83,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5bfcc9fc59f458c47aec38251375ab69, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &8688300654672729964
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4061984482990503191}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 79fb258ef70650141af587e3bb672385, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minFlickerChance: 0.01
+  maxFlickerChance: 0.2
+  minFlickerTime: 0.1
+  maxFlickerTime: 0.15
+  minIntensityReduction: 1.2
+  maxIntensityReduction: 3
+  flickerRange: 35
 --- !u!1 &7096425052844542430
 GameObject:
   m_ObjectHideFlags: 0
@@ -95,7 +115,7 @@ GameObject:
   - component: {fileID: 1432325942774751552}
   m_Layer: 0
   m_Name: Light
-  m_TagString: Untagged
+  m_TagString: Light
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
