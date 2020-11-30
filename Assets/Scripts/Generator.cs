@@ -83,6 +83,11 @@ public class Generator : MonoBehaviour
     public GameObject floorObject;
 
     /// <summary>
+    /// Whether the generator should automatically generate a maze on startup.
+    /// </summary>
+    public bool autoGenerate;
+
+    /// <summary>
     /// Gets whether a maze has been generated:
     /// <see langword="true"/> if a maze is currently generated; <see langword="false"/> otherwise.
     /// </summary>
@@ -127,10 +132,10 @@ public class Generator : MonoBehaviour
     protected void Start()
     {
         mazeSize = Mathf.Clamp(defaultMazeSize, MinMazeSize, MaxMazeSize);
-        IsGenerated = MazeGenerationWindow.WallsExist();
+        IsGenerated = !autoGenerate;
 
         // If a maze is not already created, create one
-        if (IsGenerated == false)
+        if (!IsGenerated)
         {
             NewMaze(defaultMazeSize);
         }
