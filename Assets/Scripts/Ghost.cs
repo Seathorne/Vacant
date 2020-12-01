@@ -69,16 +69,20 @@ public class Ghost : MonoBehaviour
         // Set starting health
         maxHealth = shineTime;
         Health = maxHealth;
-
+        
+        // Set initial velocity
         UpdateAdjustedVelocity();
-
+        
+        // Create list of possible directions
         directions.Add(new Vector2Int(-1, 0));
         directions.Add(new Vector2Int(1, 0));
         directions.Add(new Vector2Int(0, -1));
         directions.Add(new Vector2Int(0, 1));
-
+        
+        // Find player object
         playerObject = GameObject.Find("Player");
-
+        
+        // Calculate next pivot point
         CalculateNextPivot();
     }
 
@@ -180,6 +184,7 @@ public class Ghost : MonoBehaviour
 
     void UpdateAdjustedVelocity()
     {
+        // Update actual velocity based on dashing boolean
         if (dashing == true)
         {
             adjustedVelocity = dashVelocity * Generator.wallScale * Time.fixedDeltaTime;
@@ -199,6 +204,7 @@ public class Ghost : MonoBehaviour
         List<Vector2Int> validDirections = new List<Vector2Int>();
         Vector2Int nextElement = new Vector2Int();
 
+        // Find valid directions
         foreach (var direction in directions)
         {
             nextElement = element + direction;
@@ -226,7 +232,8 @@ public class Ghost : MonoBehaviour
         float stride = 0.0f;
 
         validDirections = CalculateValidDirections(mazeIndices);
-
+        
+        // If a valid direction exists
         if (validDirections.Count > 0)
         {
             if (playerSeen == true && validDirections.Contains(currentDirection))
@@ -237,7 +244,8 @@ public class Ghost : MonoBehaviour
             {
                 direction = validDirections[Random.Range(0, validDirections.Count)];
             }
-
+            
+            // Calculate stride
             stride += Generator.wallScale;
             nextElement = mazeIndices + direction + direction;
             while (MazeGenerator[nextElement.x, nextElement.y] != Generator.MazeElement.Wall &&
@@ -255,7 +263,8 @@ public class Ghost : MonoBehaviour
             }
 
             currentDirection = direction;
-
+            
+            // set next pivot
             nextPivot.x = transform.position.x + (float)direction.x * stride;
             nextPivot.y = transform.position.y;
             nextPivot.z = transform.position.z + (float)direction.y * stride;
@@ -271,7 +280,8 @@ public class Ghost : MonoBehaviour
     {
         Vector2Int scanElement = MazeGenerator.PositionToMazeIndices(this.transform.position) + currentDirection;
         Vector2Int playerElement = MazeGenerator.PositionToMazeIndices(playerObject.transform.position);
-
+        
+        // While line-of-sight is unobstructed, check for player
         while (MazeGenerator[scanElement.x, scanElement.y] != Generator.MazeElement.Wall &&
               MazeGenerator[scanElement.x, scanElement.y] != Generator.MazeElement.Room &&
               MazeGenerator[scanElement.x, scanElement.y] != Generator.MazeElement.OutOfBounds)
