@@ -16,7 +16,10 @@ public class Timer : MonoBehaviour
     /// </summary>
     private float startTime;
 
-    public static float BestTime { get; set; }
+    /// <summary>
+    /// The best maze completion time (in seconds) so far.
+    /// </summary>
+    public static float BestTime { get; set; } = float.MaxValue;
 
     /// <summary>
     /// The time (in seconds) elapsed in the maze so far.
