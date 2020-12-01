@@ -10,7 +10,7 @@ public class Timer : MonoBehaviour
     /// <summary>
     /// The text displaying the current time.
     /// </summary>
-    private Text timerText;
+    public Text timerText;
 
     /// <summary>
     /// The global time (in seconds) when the current maze was started.
@@ -47,14 +47,6 @@ public class Timer : MonoBehaviour
     public void StopTimer()
     {
         IsRunning = false;
-    }
-
-    /// <summary>
-    /// Start is called before the first frame update.
-    /// </summary>
-    private void Start()
-    {
-        timerText = FindObjectOfType<Text>();
     }
 
     /// <summary>
