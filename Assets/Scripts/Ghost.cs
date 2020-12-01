@@ -118,18 +118,24 @@ public class Ghost : MonoBehaviour
         float playerDraggingOffset = Generator.wallScale * 0.3f;
         Vector3 playerDraggingPosition = new Vector3();
 
+        // Calculate distance to next pivot point
         delta.x = Mathf.Abs(transform.position.x - nextPivot.x);
         delta.z = Mathf.Abs(transform.position.z - nextPivot.z);
 
+        // Check if player is in line-of-sight
         playerSeen = IsPlayerSeen();
 
+        // If player is seen or is being dragged
         if (playerSeen == true || draggingPlayer == true)
         {
+            // Set booleans and update velocity
             dashing = true;
             UpdateAdjustedVelocity();
-
+            
+            // If player is being dragged
             if (draggingPlayer == true)
             {
+                // Position player behind ghost
                 playerDraggingPosition.x = transform.position.x - currentDirection.x * playerDraggingOffset;
                 playerDraggingPosition.y = playerObject.transform.position.y;
                 playerDraggingPosition.z = transform.position.z - currentDirection.y * playerDraggingOffset;
@@ -138,20 +144,25 @@ public class Ghost : MonoBehaviour
             }
         }
 
+        // If pivot has been reached
         if (delta.x < adjustedVelocity && delta.z < adjustedVelocity)
         {
             transform.position = nextPivot;
 
+            // If player is seen
             if (playerSeen == false)
             {
+                // Set dashing boolean and update velocity to higher speed
                 dashing = false;
                 UpdateAdjustedVelocity();
             }
-
+            
+            // Calculate next pivot point
             CalculateNextPivot();
         }
         else
         {
+            // Update position
             transform.position = new Vector3(transform.position.x + currentDirection.x * adjustedVelocity,
                                              transform.position.y,
                                              transform.position.z + currentDirection.y * adjustedVelocity);
@@ -179,6 +190,10 @@ public class Ghost : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Calculates viable directions to move from a given element in maze.
+    /// </summary>
+    /// <param name="element">Indices of element to check.</param>
     List<Vector2Int> CalculateValidDirections(Vector2Int element)
     {
         List<Vector2Int> validDirections = new List<Vector2Int>();
@@ -199,6 +214,9 @@ public class Ghost : MonoBehaviour
         return validDirections;
     }
 
+    /// <summary>
+    /// Calculate the ghost's next viable turn.
+    /// </summary>
     void CalculateNextPivot()
     {
         Vector2Int mazeIndices = MazeGenerator.PositionToMazeIndices(this.transform.position);
@@ -246,6 +264,9 @@ public class Ghost : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Checks if player is within the ghost's line-of-sight
+    /// </summary>
     bool IsPlayerSeen()
     {
         Vector2Int scanElement = MazeGenerator.PositionToMazeIndices(this.transform.position) + currentDirection;
@@ -266,6 +287,9 @@ public class Ghost : MonoBehaviour
         return false;
     }
 
+    /// <summary>
+    /// Checks collisions.
+    /// </summary>
     void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.GetComponent<Player>() is Player player)
@@ -280,6 +304,9 @@ public class Ghost : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Respawns ghost elsewhere in the maze.
+    /// </summary>
     void Respawn()
     {
         // Release player

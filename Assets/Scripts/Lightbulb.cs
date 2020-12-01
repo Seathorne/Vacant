@@ -10,6 +10,7 @@ public class Lightbulb : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        // Retrieve player object and light component
         playerObject = GameObject.Find("Player");
         lightComponent = transform.GetComponent<Light>();
     }
@@ -24,11 +25,14 @@ public class Lightbulb : MonoBehaviour
     {
         float distanceToPlayer = Vector3.Distance(playerObject.transform.position, transform.position);
         float cullingDistance = 8.0f * Generator.wallScale;
- 
-        if (distanceToPlayer < cullingDistance){
+        
+        // If lightbulb is within culling distance of player
+        if (distanceToPlayer < cullingDistance)
+        {
             lightComponent.enabled = true;    
         }
-        if (distanceToPlayer > cullingDistance){
+        else if (distanceToPlayer > cullingDistance)
+        {
             lightComponent.enabled = false;
         }
     }
