@@ -2,6 +2,7 @@
 
 /// <summary>
 /// Whether an item is held and out, held and hidden, or not held.
+/// Authors: Scott Clarke and Daniel Darnell.
 /// </summary>
 public enum ItemState
 {
@@ -23,6 +24,7 @@ public enum ItemState
 
 /// <summary>
 /// Represents an item that the player can hold.
+/// Authors: Scott Clarke and Daniel Darnell.
 /// </summary>
 public abstract class Item : MonoBehaviour
 {

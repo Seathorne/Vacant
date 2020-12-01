@@ -5,6 +5,7 @@ using UnityEngine;
 
 /// <summary>
 /// A player that can move and pick up or use items using user input.
+/// Authors: Scott Clarke and Daniel Darnell.
 /// </summary>
 public class Player : MonoBehaviour
 {

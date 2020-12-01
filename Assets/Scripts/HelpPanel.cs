@@ -2,6 +2,7 @@
 
 /// <summary>
 /// A menu that can open or close.
+/// Authors: Scott Clarke and Daniel Darnell.
 /// </summary>
 public class HelpPanel : MenuPanel
 {

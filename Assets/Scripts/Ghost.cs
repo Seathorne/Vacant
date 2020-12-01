@@ -1,7 +1,10 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+
 using UnityEngine;
 
+/// <summary>
+/// Authors: Scott Clarke and Daniel Darnell.
+/// </summary>
 public class Ghost : MonoBehaviour
 {
     /// <summary>

@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 
 using UnityEngine;
 
 /// <summary>
 /// A panel that opens at the beginning of the game and then closes.
+/// Authors: Scott Clarke and Daniel Darnell.
 /// </summary>
 public class StartPanel : MenuPanel
 {

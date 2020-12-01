@@ -1,8 +1,10 @@
 ﻿using System.Collections;
+
 using UnityEngine;
 
 /// <summary>
 /// A menu that can open or close.
+/// Authors: Scott Clarke and Daniel Darnell.
 /// </summary>
 public abstract class MenuPanel : MonoBehaviour
 {

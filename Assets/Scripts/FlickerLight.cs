@@ -1,9 +1,11 @@
 ﻿using System.Collections;
 using System.Linq;
+
 using UnityEngine;
 
 /// <summary>
 /// A decoration light that flickers when a ghost is nearby.
+/// Authors: Scott Clarke and Daniel Darnell.
 /// </summary>
 public class FlickerLight : MonoBehaviour
 {

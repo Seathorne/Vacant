@@ -2,10 +2,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+
 using UnityEngine;
 
 /// <summary>
 /// Provides static utility, helper, and extension methods.
+/// Authors: Scott Clarke and Daniel Darnell.
 /// </summary>
 public static class Utility
 {

@@ -1,7 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
+/// <summary>
+/// Authors: Scott Clarke and Daniel Darnell.
+/// </summary>
 public class Lightbulb : MonoBehaviour
 {
     private GameObject playerObject;
@@ -13,12 +14,6 @@ public class Lightbulb : MonoBehaviour
         // Retrieve player object and light component
         playerObject = GameObject.Find("Player");
         lightComponent = transform.GetComponent<Light>();
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
     
     void FixedUpdate()

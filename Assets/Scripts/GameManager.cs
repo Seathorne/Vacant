@@ -3,6 +3,7 @@ using UnityEngine.UI;
 
 /// <summary>
 /// Represents global game logic and game state.
+/// Authors: Scott Clarke and Daniel Darnell.
 /// </summary>
 public class GameManager : MonoBehaviour
 {

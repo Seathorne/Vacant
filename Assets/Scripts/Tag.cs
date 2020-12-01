@@ -1,5 +1,6 @@
 ﻿/// <summary>
 /// Provides cleaner access to Unity tags to avoid hard-coding strings.
+/// Authors: Scott Clarke and Daniel Darnell.
 /// </summary>
 public static class Tag
 {

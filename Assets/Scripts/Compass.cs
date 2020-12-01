@@ -2,6 +2,7 @@
 
 /// <summary>
 /// A compass that always points toward a set location.
+/// Authors: Scott Clarke and Daniel Darnell.
 /// </summary>
 public class Compass : Item
 {
@@ -15,14 +16,6 @@ public class Compass : Item
     /// The location towards which the compass always points.
     /// </summary>
     public Vector3 PointLocation { get; set; }
-
-    /// <summary>
-    /// Start is called before the first frame update.
-    /// </summary>
-    private void Start()
-    {
-
-    }
 
     /// <summary>
     /// Update is called once per frame.

@@ -2,6 +2,7 @@
 
 /// <summary>
 /// A light that aim at the current mouse location.
+/// Authors: Scott Clarke and Daniel Darnell.
 /// </summary>
 public class Flashlight : Item
 {
@@ -22,14 +23,6 @@ public class Flashlight : Item
     /// or <see langword="null"/> if no ghost was hit.
     /// </summary>
     public Ghost RecentGhostHit { get; private set; }
-
-    /// <summary>
-    /// Start is called before the first frame update.
-    /// </summary>
-    private void Start()
-    {
-
-    }
 
     /// <summary>
     /// Update is called once per frame.

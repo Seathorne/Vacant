@@ -4,6 +4,7 @@ using UnityEngine;
 
 /// <summary>
 /// Generates mazes of a specified size.
+/// Authors: Scott Clarke and Daniel Darnell.
 /// </summary>
 public class Generator : MonoBehaviour
 {

@@ -3,6 +3,7 @@ using UnityEngine.UI;
 
 /// <summary>
 /// Keeps track of the time taken for the player to complete a maze.
+/// Authors: Scott Clarke and Daniel Darnell.
 /// </summary>
 public class Timer : MonoBehaviour
 {
