@@ -9,6 +9,7 @@ TagManager:
   - Light
   - Exit
   - Compass
+  - BestTime
   layers:
   - Default
   - TransparentFX

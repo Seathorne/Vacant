@@ -100,7 +100,7 @@ public abstract class MenuPanel : MonoBehaviour
         while (Vector2.Distance(RectTransform.anchoredPosition, target) >= 1f)
         {
             // Move towards target
-            RectTransform.anchoredPosition = Vector2.Lerp(RectTransform.anchoredPosition, target, speed * Time.unscaledDeltaTime);
+            RectTransform.anchoredPosition = Vector2.MoveTowards(RectTransform.anchoredPosition, target, speed * Time.unscaledDeltaTime);
             yield return null;
         }
 

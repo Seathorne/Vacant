@@ -32,6 +32,11 @@ public class GameManager : MonoBehaviour
     public Generator generator;
 
     /// <summary>
+    /// The text field that shows the best maze escape time so far.
+    /// </summary>
+    public Text bestTime;
+
+    /// <summary>
     /// Whether the game is currently paused.
     /// </summary>
     public static bool IsPaused { get; private set; } = false;
@@ -83,6 +88,15 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void Win()
     {
+        // Stop timer
+        var timer = FindObjectOfType<Timer>();
+        timer.StopTimer();
+
+        // Show best time
+        Timer.BestTime = Mathf.Min(timer.ElapsedTime, Timer.BestTime);
+        bestTime.text = $"Best time: {Timer.ToString(Timer.BestTime)}";
+
+        // Show end screen
         StartCoroutine(endPanel.FadeIn());
     }
 
