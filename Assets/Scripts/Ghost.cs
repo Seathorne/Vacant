@@ -55,6 +55,12 @@ public class Ghost : MonoBehaviour
     /// </summary>
     public bool InFlashlight { get; private set; }
 
+    /// <summary>
+    /// The player that is currently being dragged;
+    /// <see lanword="null"/> if no player is being dragged.
+    /// </summary>
+    public Player DraggedPlayer { get; private set; }
+
     // Start is called before the first frame update
     void Start()
     {
@@ -262,17 +268,29 @@ public class Ghost : MonoBehaviour
 
     void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.name == "Player")
+        if (collision.gameObject.GetComponent<Player>() is Player player)
         {
+            // Begin dragging player
+            DraggedPlayer = player;
+            DraggedPlayer.IsBeingDragged = true;
+            DraggedPlayer.BringOutItem(null);
+
             draggingPlayer = true;
-            Invoke("Respawn", 4.0f);
+            Invoke(nameof(Respawn), 4.0f);
         }
     }
 
     void Respawn()
     {
-        MazeGenerator.InstantiateGhost();
+        // Release player
+        if (DraggedPlayer is Player)
+        {
+            DraggedPlayer.IsBeingDragged = false;
+            DraggedPlayer = null;
+        }
 
+        // Create new ghost
+        MazeGenerator.InstantiateGhost();
         Destroy(gameObject);
     }
 }

@@ -20,20 +20,12 @@ public class EndPanel : MenuPanel
     public float fadeOutTime;
 
     /// <summary>
-    /// Start is called before the first frame update.
+    /// Awake is called when the component first becomes active.
     /// </summary>
-    private void Start()
+    private void Awake()
     {
         RectTransform = GetComponent<RectTransform>();
         CanvasGroup = GetComponent<CanvasGroup>();
-    }
-
-    /// <summary>
-    /// Update is called once per frame.
-    /// </summary>
-    private void Update()
-    {
-
     }
 
     /// <summary>
@@ -44,9 +36,10 @@ public class EndPanel : MenuPanel
     {
         GameManager.Pause();
 
-        // All UI elements other than this one
+        // All UI elements other than those to show up on end screen
         var ui = from Transform child in GetComponentInParent<Canvas>().transform
                  where child.GetComponent<EndPanel>() is null
+                    && child.GetComponent<Timer>() is null
                  select child.gameObject;
 
         // Fade out all panels from opacity 1 to 0
@@ -54,16 +47,15 @@ public class EndPanel : MenuPanel
                          let canvasGroup = child.GetComponent<CanvasGroup>()
                          where canvasGroup is CanvasGroup
                          select new Func<IEnumerator>(() => Fade(canvasGroup, 1f, 0f, fadeOutTime));
-        
+
         // Fade panels out, in parallel
         yield return Utility.Parallel(FindObjectOfType<GameManager>(), coroutines);
 
-        // Deactivate any remaining UI elements other than this one
+        // Deactivate any remaining UI elements
         ui.ForEach(x => x.SetActive(false));
 
         // Fade this end screen in
         gameObject.SetActive(true);
-        Utility.Print(CanvasGroup);
         yield return Fade(CanvasGroup, 0f, 1f, openCloseTime);
     }
 }

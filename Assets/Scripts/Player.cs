@@ -83,6 +83,11 @@ public class Player : MonoBehaviour
     public Item HeldItem { get; private set; }
 
     /// <summary>
+    /// Whether the player is being dragged by a ghost or not.
+    /// </summary>
+    public bool IsBeingDragged { get; set; }
+
+    /// <summary>
     /// Start is called before the first frame update.
     /// </summary>
     private void Start()
@@ -111,6 +116,12 @@ public class Player : MonoBehaviour
         }
 
         UpdateWin();
+
+        if (IsBeingDragged)
+        {
+            // If being dragged, allow no player controls
+            return;
+        }
 
         UpdateRotation();
         UpdateMoveRelative();
@@ -209,19 +220,14 @@ public class Player : MonoBehaviour
     /// activate the specified held item.
     /// </summary>
     /// <param name="item">The item to activate.</param>
-    private void BringOutItem(Item item)
+    public void BringOutItem(Item item)
     {
-        if (item is null)
-        {
-            return;
-        }
-
         // Hide previous item
         HeldItem?.SetHeldState(ItemState.HeldHidden);
 
         // Show current item
         HeldItem = item;
-        HeldItem.SetHeldState(ItemState.HeldOut);
+        HeldItem?.SetHeldState(ItemState.HeldOut);
     }
 
     /// <summary>

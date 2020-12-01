@@ -43,7 +43,9 @@ public class StartPanel : MenuPanel
         yield return Fade(CanvasGroup, 1f, 0f, openCloseTime);
         gameObject.SetActive(false);
 
+        // Start the game
         GameManager.Pause(setPaused: false);
+        FindObjectOfType<Timer>().RestartTimer();
 
         // All UI elements other than start/end panel
         var ui = from Transform child in GetComponentInParent<Canvas>().transform
