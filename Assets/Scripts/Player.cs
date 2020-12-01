@@ -195,22 +195,13 @@ public class Player : MonoBehaviour
 
     /// <summary>
     /// Makes the player switch which held item is currently active.
-    /// Having no item active is a valid result.
     /// </summary>
     public void CycleActiveItem()
     {
         int nextIndex = heldItems.IndexOf(HeldItem) + 1;
-        if (nextIndex >= heldItems.Count)
-        {
-            // If holding last item, make none active
-            HeldItem?.SetHeldState(ItemState.HeldHidden);
-            HeldItem = null;
-        }
-        else
-        {
-            // Otherwise, cycle to next item
-            BringOutItem(heldItems[nextIndex]);
-        }
+
+        // Cycle to next item
+        BringOutItem(heldItems[nextIndex % heldItems.Count]);
     }
 
     /// <summary>
@@ -244,6 +235,7 @@ public class Player : MonoBehaviour
                     where Vector3.Distance(exit.transform.position, transform.position) <= winRange
                     select exit;
 
+        // If exit in range, win
         if (exits.Count() >= 1)
         {
             FindObjectOfType<GameManager>().Win();

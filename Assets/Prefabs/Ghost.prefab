@@ -105,6 +105,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 48cdc9c2dd965c64687fac3adaaa08eb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  shineTime: 1
+  shineTime: 0.2
   velocity: 1
-  dashVelocity: 5
+  dashVelocity: 3

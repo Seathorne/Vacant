@@ -16,14 +16,7 @@ public class HelpPanel : MenuPanel
         OpenPosition = Vector2.zero;
         ClosedPosition = new Vector2(RectTransform.rect.width, 0f);
 
+        // Close menu at start
         OpenInstantly(setOpen: false);
-    }
-
-    /// <summary>
-    /// Update is called once per frame.
-    /// </summary>
-    private void Update()
-    {
-
     }
 }

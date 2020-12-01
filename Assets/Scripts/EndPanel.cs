@@ -26,9 +26,6 @@ public class EndPanel : MenuPanel
     {
         RectTransform = GetComponent<RectTransform>();
         CanvasGroup = GetComponent<CanvasGroup>();
-
-        OpenPosition = Vector2.zero;
-        ClosedPosition = new Vector2(0f, RectTransform.rect.height);
     }
 
     /// <summary>
@@ -47,11 +44,9 @@ public class EndPanel : MenuPanel
     {
         GameManager.Pause();
 
-        gameObject.SetActive(true);
-
         // All UI elements other than this one
         var ui = from Transform child in GetComponentInParent<Canvas>().transform
-                 where child != transform
+                 where child.GetComponent<EndPanel>() is null
                  select child.gameObject;
 
         // Fade out all panels from opacity 1 to 0
@@ -59,12 +54,16 @@ public class EndPanel : MenuPanel
                          let canvasGroup = child.GetComponent<CanvasGroup>()
                          where canvasGroup is CanvasGroup
                          select new Func<IEnumerator>(() => Fade(canvasGroup, 1f, 0f, fadeOutTime));
-        yield return Utility.Parallel(this, coroutines);
+        
+        // Fade panels out, in parallel
+        yield return Utility.Parallel(FindObjectOfType<GameManager>(), coroutines);
 
         // Deactivate any remaining UI elements other than this one
         ui.ForEach(x => x.SetActive(false));
 
         // Fade this end screen in
+        gameObject.SetActive(true);
+        Utility.Print(CanvasGroup);
         yield return Fade(CanvasGroup, 0f, 1f, openCloseTime);
     }
 }

@@ -22,7 +22,7 @@ public static class Utility
             { VirtualKey.TogglePause, (key: KeyCode.Escape, alt: KeyCode.P) },
             { VirtualKey.PickUpItem, (key: KeyCode.Q, alt: null) },
             { VirtualKey.DropItem, (key: KeyCode.E, alt: null) },
-            { VirtualKey.SwapItem, (key: KeyCode.LeftShift, alt: null) },
+            { VirtualKey.SwapItem, (key: KeyCode.F, alt: KeyCode.LeftShift) },
         };
 
     /// <summary>

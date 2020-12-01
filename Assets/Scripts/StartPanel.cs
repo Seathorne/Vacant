@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 
 using UnityEngine;
@@ -27,42 +28,30 @@ public class StartPanel : MenuPanel
         RectTransform = GetComponent<RectTransform>();
         CanvasGroup = GetComponent<CanvasGroup>();
 
-        OpenPosition = Vector2.zero;
-        ClosedPosition = new Vector2(0f, RectTransform.rect.height);
-        
-        StartCoroutine(FadeOut());
+        GameManager.Pause();
     }
 
     /// <summary>
-    /// Update is called once per frame.
-    /// </summary>
-    private void Update()
-    {
-
-    }
-
-    /// <summary>
-    /// Fades out the title screen.
+    /// Fades out the title screen and fades in other UI elements.
     /// </summary>
     /// <returns>Yield returns until the title screen is faded out.</returns>
-    private IEnumerator FadeOut()
+    public IEnumerator FadeOut()
     {
-        // Pause game while this title screen fades out
-        GameManager.Pause();
-
-        // Deactivate all parent UI elements other than this one
-        var ui = from Transform child in GetComponentInParent<Canvas>().transform
-                 where child != transform && (child.GetComponent<EndPanel>() is null)
-                 select child.gameObject;
-        ui.ForEach(x => x.SetActive(false));
-
         yield return new WaitForSecondsRealtime(holdTime);
 
         // Fade this title screen out
         yield return Fade(CanvasGroup, 1f, 0f, openCloseTime);
+        gameObject.SetActive(false);
+
         GameManager.Pause(setPaused: false);
 
-        // Reactivate all parent UI elements
+        // All UI elements other than start/end panel
+        var ui = from Transform child in GetComponentInParent<Canvas>().transform
+                 where child.GetComponent<StartPanel>() is null
+                    && child.GetComponent<EndPanel>() is null
+                 select child.gameObject;
+
+        // Ensure parent UI elements are active
         ui.ForEach(x => x.SetActive(true));
 
         // Fade in all panels from opacity 0 to 1
@@ -70,6 +59,8 @@ public class StartPanel : MenuPanel
                          let canvasGroup = child.GetComponent<CanvasGroup>()
                          where canvasGroup is CanvasGroup
                          select new Func<IEnumerator>(() => Fade(canvasGroup, 0f, 1f, fadeInTime));
-        yield return Utility.Parallel(this, coroutines);
+
+        // Fade panels in, in parallel
+        yield return Utility.Parallel(FindObjectOfType<GameManager>(), coroutines);
     }
 }

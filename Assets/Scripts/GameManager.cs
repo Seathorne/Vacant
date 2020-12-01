@@ -27,6 +27,11 @@ public class GameManager : MonoBehaviour
     public Button helpButton;
 
     /// <summary>
+    /// The generator to use for creating the maze.
+    /// </summary>
+    public Generator generator;
+
+    /// <summary>
     /// Whether the game is currently paused.
     /// </summary>
     public static bool IsPaused { get; private set; } = false;
@@ -39,6 +44,7 @@ public class GameManager : MonoBehaviour
         startPanel.gameObject.SetActive(true);
         helpPanel.gameObject.SetActive(true);
         helpButton.gameObject.SetActive(true);
+        endPanel.gameObject.SetActive(false);
     }
 
     /// <summary>
@@ -86,6 +92,46 @@ public class GameManager : MonoBehaviour
     public void Restart()
     {
         UnityEngine.SceneManagement.SceneManager.LoadScene("SampleScene");
+    }
+
+    /// <summary>
+    /// Starts the game with the specified maze size.
+    /// </summary>
+    /// <param name="mazeSize">The size of the maze to generate.</param>
+    private void Start(int mazeSize)
+    {
+        // Disable buttons
+        startPanel.GetComponentsInChildren<Button>().ForEach(x => x.interactable = false);
+
+        // Generate maze
+        generator.NewMaze(mazeSize);
+
+        // Begin game
+        StartCoroutine(startPanel.FadeOut());
+    }
+
+    /// <summary>
+    /// Starts the game with an easy-difficulty maze.
+    /// </summary>
+    public void StartEasy()
+    {
+        Start(15);
+    }
+
+    /// <summary>
+    /// Starts the game with a medium-difficulty maze.
+    /// </summary>
+    public void StartMedium()
+    {
+        Start(21);
+    }
+
+    /// <summary>
+    /// Starts the game with a hard-difficulty maze.
+    /// </summary>
+    public void StartHard()
+    {
+        Start(31);
     }
 
     /// <summary>
