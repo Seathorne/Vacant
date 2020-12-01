@@ -198,6 +198,11 @@ public class Generator : MonoBehaviour
         IsGenerated = false;
     }
     
+    /// <summary>
+    /// Safe operator overload to access maze data.
+    /// </summary>
+    /// <param name="x">X index</param>
+    /// <param name="y">Y index</param>
     public MazeElement this[int x, int y]
     {
         get
@@ -223,6 +228,10 @@ public class Generator : MonoBehaviour
         }
     }
     
+    /// <summary>
+    /// Converts world position to maze indices
+    /// </summary>
+    /// <param name="position">World position to convert</param>
     public Vector2Int PositionToMazeIndices(Vector3 position)
     {
         Vector2Int mazeIndices = new Vector2Int();
@@ -349,6 +358,11 @@ public class Generator : MonoBehaviour
                      new Vector2Int(mazeSize - startingRoomBounds - 1, mazeSize - startingRoomBounds - 1));
     }
     
+    /// <summary>
+    /// Generates valid and randomly positioned door along perimeter of given rectangle.
+    /// </summary>
+    /// <param name="topLeft">Top-left corner of rectangle.</param>
+    /// <param name="bottomRight">Bottom-right corner of rectangle.</param>
     Vector2Int GenerateDoor(Vector2Int topLeft, Vector2Int bottomRight)
     {
         string axis = Random.Range(0, 2) == 0 ? "x" : "y";
@@ -400,6 +414,9 @@ public class Generator : MonoBehaviour
         return door;
     }
     
+    /// <summary>
+    /// Instantiates overhead lights inside maze.
+    /// </summary>
     public void InstantiateLights()
     {
         float floorOffset = floorScale * 5.0f;
@@ -431,6 +448,9 @@ public class Generator : MonoBehaviour
         }
     }
     
+    /// <summary>
+    /// Instantiates one randomly-positioned ghost.
+    /// </summary>
     public void InstantiateGhost()
     {
         int x;
@@ -458,6 +478,10 @@ public class Generator : MonoBehaviour
         mazeObjects.Add(ghostObject);
     }
     
+    /// <summary>
+    /// Instantiates exit door prefab.
+    /// </summary>
+    /// <param name="indices">Indices of exit door.</param>
     void InstantiateExit(Vector2Int indices)
     {
         float floorOffset = floorScale * 5.0f;
@@ -512,6 +536,9 @@ public class Generator : MonoBehaviour
         );
     }
     
+    /// <summary>
+    /// Instantiates compass at random valid location in maze.
+    /// </summary>
     void InstantiateCompass()
     {
         int x;
@@ -539,6 +566,9 @@ public class Generator : MonoBehaviour
         mazeObjects.Add(compassObject);
     }
     
+    /// <summary>
+    /// Instantiates entire maze.
+    /// </summary>
     void InstantiateMaze()
     {
         float floorOffset = floorScale * 5.0f;
